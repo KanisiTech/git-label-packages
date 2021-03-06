@@ -1,0 +1,106 @@
+#!/bin/bash
+
+# This script uses the GitHub Labels REST API
+# https://developer.github.com/v3/issues/labels/
+
+# Based on:
+# https://douglascayers.com/2019/08/01/how-to-export-and-import-github-issue-labels-between-projects/
+
+set -euo pipefail
+
+REPOSITORY=""
+PERSONAL_ACCESS_TOKEN=""
+LABEL_PACK=""
+while getopts ":ht:r:p:" opt; do
+  case ${opt} in
+    h)
+      echo "Add or updated Labels in a selected GitHub repository"
+      echo ""
+      echo "-h             Show this help"
+      echo "-r repository  The repository to apply labels to, eg, 'ExampleOrganisation/RepoName'"
+      echo "-t token       Personal Access Token for GitHub's API"
+      echo "-p pack        Path to the Label pack to apply"
+      exit 0
+      ;;
+    r)
+      REPOSITORY=$OPTARG
+      ;;
+    t)
+      PERSONAL_ACCESS_TOKEN=$OPTARG
+      ;;
+    p)
+      LABEL_PACK=$OPTARG
+      ;;
+    \?)
+      echo "Invalid option: $OPTARG" >&2
+      ;;
+    :)
+      echo "Invalid option: $OPTARG requires an argument" >&2
+      ;;
+  esac
+done
+shift $((OPTIND - 1))
+
+if [[ -z "${PERSONAL_ACCESS_TOKEN}" ]]; then
+  echo "⚠️   -t 'token' was not defined." >&2
+  echo '    It should be a GitHub Personal Access Token.' >&2
+  echo '    https://help.github.com/en/articles/creating-a-personal-access-token-for-the-command-line' >&2
+  exit 1
+fi
+
+if [[ -z "${REPOSITORY}" ]]; then
+  echo "⚠️  -r 'organisation_name/repository_name' was not defined."
+  exit 1
+fi
+
+if [[ -z "${LABEL_PACK}" ]]; then
+  echo "⚠️  -p 'label_pack/something.json' was not defined."
+  exit 1
+fi
+
+# ---------------------------------------------------------
+
+if ! [ -x "$(command -v jq)" ]; then
+  echo "⚠️   'jq' is not installed." >&2
+  echo "    Try 'brew install jq'" >&2
+  exit 1
+fi
+
+# ---------------------------------------------------------
+API_URL="https://api.github.com"
+
+# Headers used in curl commands
+GITHUB_ACCEPT_HEADER="Accept: application/vnd.github.symmetra-preview+json"
+GITHUB_AUTH_HEADER="Authorization: Bearer $PERSONAL_ACCESS_TOKEN"
+
+# Bash for-loop over JSON array with jq
+# https://starkandwayne.com/blog/bash-for-loop-over-json-array-using-jq/
+sourceLabelsBase64=$(cat "${LABEL_PACK}" | jq '[ .[] | { "name": .name, "color": .color, "description": .description } ]' | jq -r '.[] | @base64')
+
+# For each Label in the pack, ask the API to create or update that Label in
+# the target repo
+for sourceLabelBase64 in $sourceLabelsBase64; do
+    sourceLabel=$(echo "${sourceLabelBase64}" | base64 --decode | jq -r '.')
+    TARGET_URI="${API_URL}/repos/${REPOSITORY}/labels"
+
+    # Try to create the label
+    # POST /repos/:owner/:repo/labels { name, color, description }
+    # https://developer.github.com/v3/issues/labels/#create-a-label
+    createLabelResponse=$(echo "$sourceLabel" | curl --silent -X POST -d @- -H "$GITHUB_ACCEPT_HEADER" -H "$GITHUB_AUTH_HEADER" "${TARGET_URI}")
+
+    # If creation failed then the response doesn't include an id and jq returns 'null'
+    createdLabelId=$(echo "$createLabelResponse" | jq -r '.id')
+
+    # If the Label wasn't created then perhaps it's because it already exists,
+    # try to update it
+    if [ "$createdLabelId" == "null" ]; then
+        updateLabelResponse=$(echo "$sourceLabel" | curl --silent -X PATCH -d @- -H "$GITHUB_ACCEPT_HEADER" -H "$GITHUB_AUTH_HEADER" "${TARGET_URI}/$(echo "${sourceLabel}" | jq -r '.name | @uri')")
+        echo "Update label response:"
+        echo "${updateLabelResponse}"
+    else
+        echo "Create label response:"
+        echo "${createLabelResponse}"
+    fi
+done
+
+exit 0

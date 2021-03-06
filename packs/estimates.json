@@ -1,0 +1,10 @@
+[
+  { "name": "Estimate required :question:", "description": "", "color": "FEF2E0" },
+  { "name": "Estimate size: :shirt: Small", "description": "", "color": "FEF2E0" },
+  { "name": "Estimate size: :shirt: Medium",  "description": "", "color": "FEF2E0" },
+  { "name": "Estimate size: :shirt: Large",  "description": "", "color": "FEF2E0" },
+  { "name": "Estimate size: :shirt: X-Large",  "description": "","color": "FEF2E0" },
+  { "name": "Estimate confidence: :green_circle:", "description": "The work is well understood.", "color": "FEF2E0" },
+  { "name": "Estimate confidence: :yellow_circle:", "description": "The work is reasonably well understood, but some investigation is needed.", "color": "FEF2E0" },
+  { "name": "Estimate confidence: :red_circle:", "description": "The work is not well understood and has significant risk.", "color": "FEF2E0" }
+]
