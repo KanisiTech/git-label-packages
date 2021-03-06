@@ -1,6 +1,6 @@
 [
-  { "name": ":grey_question: Triage needed",, "description": "New issue, triage needed",  "color": "D93F0B" },
-  { "name": ":warning: Blocked",, "description": "This work is unable to proceed",  "color": "D93F0B" },
+  { "name": ":grey_question: Triage needed", "description": "New issue, triage needed",  "color": "D93F0B" },
+  { "name": ":warning: Blocked", "description": "This work is unable to proceed",  "color": "D93F0B" },
   { "name": ":bug: Bug", "description": "Something is not working as intended!",  "color": "D93F0B" },
   { "name": ":lock: Security", "description": "Security related changes; responses to CVEs or preventative.",  "color": "D93F0B" },
   { "name": "Triage: monitoring", "description": "Something we're monitoring for recurrence rates.",  "color": "C95F0B" },
