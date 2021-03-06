@@ -1,6 +1,6 @@
 # git-label-packages
 
-Our repository labels for use with NEW TOOL
+A simple tool to apply labels to a GitHub repository.
 
 Having consistent labels for PRs and Issues across the Organization makes it
 easier to work across multiple repositories.
