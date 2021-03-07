@@ -7,5 +7,5 @@
   { "name": ":racing_car: Performance", "description": "Making something faster.", "color": "f4fbfd" },
   { "name": ":book: Documentation", "description": "Documentation.", "color": "d0f2fc" },
   { "name": ":hammer_and_wrench:  Maintenance", "description": "Regular upgrades, cruft removal etc.", "color": "ecf4a1" },
-  { "name": ":star: Enhancement", "description": "A new feature? A better design? Something has been improved.", "color": "a2ceff" },
+  { "name": ":star: Enhancement", "description": "A new feature? A better design? Something has been improved.", "color": "a2ceff" }
 ]
