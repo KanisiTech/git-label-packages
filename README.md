@@ -1,13 +1,13 @@
 # git-label-packages
 
-A simple tool to apply labels to a GitHub repository.
+A tool to quickly apply labels to GitHub repositories.
 
-Having consistent labels for PRs and Issues across the Organization makes it
+Having consistent labels for PRs and Issues across an Organization makes it
 easier to work across multiple repositories.
 
 ## Usage
 
-Eg
+For example:
 ```
 # Show help
 ./apply-github-labels -h
